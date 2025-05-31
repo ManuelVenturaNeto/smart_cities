@@ -1,0 +1,91 @@
+<!-- src/main/templates/commutes.html -->
+<!-- *************************************************** -->
+<!--   Página do widget “Commutes and Destinations Map”  -->
+<!-- *************************************************** -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Commutes and Destinations Map</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      /* (Aqui entre o CSS completo do exemplo, omitido para brevidade) */
+      /* Copie todo o <style> que você já tinha, sem alterações. */
+    </style>
+  </head>
+  <body>
+    <!-- *************************************************** -->
+    <!--   SVGs e elementos estáticos (idem ao exemplo original) -->
+    <!-- *************************************************** -->
+    <svg class="hide">
+      <!-- Definições de ícones -->
+    </svg>
+    <!-- (Demais SVGs omitidos para brevidade) -->
+
+    <main class="commutes">
+      <div class="commutes-map" aria-label="Map">
+        <div class="map-view"></div>
+      </div>
+
+      <div class="commutes-info">
+        <!-- Painel inicial -->
+        <div class="commutes-initial-state">
+          <!-- (Conteúdo original) -->
+        </div>
+
+        <!-- Painel de destinos -->
+        <div class="commutes-destinations">
+          <!-- (Conteúdo original) -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Modal de destino -->
+    <div class="commutes-modal-container">
+      <!-- (Conteúdo original do modal) -->
+    </div>
+
+    <!-- --------------------------------------------------- -->
+    <!--   1) Injeta a configuração do Flask no JS          -->
+    <!-- --------------------------------------------------- -->
+    <script type="application/json">
+      'use strict';
+      // O Flask injeta o objeto `configuration` aqui como JSON válido:
+      const CONFIGURATION = {{ configuration | tojson }};
+    </script>
+
+    <!-- --------------------------------------------------- -->
+    <!--   2) Script “Commutes” (idem ao exemplo original,  -->
+    <!--      mas sem alterar o uso de CONFIGURATION)        -->
+    <!-- --------------------------------------------------- -->
+    <script>
+      'use strict';
+      // TODO: copie todo o conteúdo JavaScript do exemplo original
+      // que inicia o widget Commutes, sem remover nada. Ele usa `CONFIGURATION`.
+      // Exemplo de início:
+      function Commutes(configuration) {
+        // ... todo o código JS que você já tinha, sem alterações ...
+      }
+
+      // Em seguida, a função initMapScript chama new Commutes(CONFIGURATION)
+      function initMapScript() {
+        new Commutes(CONFIGURATION);
+      }
+    </script>
+
+    <!-- --------------------------------------------------- -->
+    <!--   3) Carrega a Google Maps JS API (chave debrowser) -->
+    <!-- --------------------------------------------------- -->
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?
+           key={{ configuration.mapsApiKey }}
+           &callback=initMapScript
+           &libraries=places,geometry&solution_channel=GMP_QB_commutes_v3_c">
+    </script>
+  </body>
+</html>

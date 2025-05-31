@@ -1,0 +1,41 @@
+/* Estilos gerais da aplicação */
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2 {
+  color: #333;
+}
+
+.back-link {
+  text-decoration: none;
+  color: #0066cc;
+  margin: 20px;
+  display: inline-block;
+}
+
+/* Estilos da tabela de resultados */
+
+table {
+  border-collapse: collapse;
+  margin: 20px;
+  width: calc(100% - 40px);
+  background-color: #fff;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Se existirem outros estilos globalmente necessários, podem ser adicionados aqui. */

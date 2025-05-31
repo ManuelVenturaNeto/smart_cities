@@ -1,0 +1,141 @@
+<!-- src/main/templates/results.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <title>Resultados para modo: {{ mode }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <style>
+      body { margin: 0; font-family: Arial, sans-serif; }
+      #map { height: 400px; width: 100%; background: #eee; }
+      table {
+        border-collapse: collapse;
+        margin-top: 20px;
+        width: 100%;
+      }
+      th, td {
+        text-align: left;
+        padding: 8px;
+        border: 1px solid #ddd;
+      }
+      th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+      }
+      a.back-link {
+        text-decoration: none;
+        color: #0066cc;
+        margin: 20px;
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Botão “Voltar” para a página inicial -->
+    <a href="{{ url_for('index') }}" class="back-link">&#8592; Voltar</a>
+    <h2 style="margin-left:20px;">Resultados para modo: {{ mode }}</h2>
+
+    <!-- Local onde o mapa será renderizado -->
+    <div id="map"></div>
+
+    <!-- Tabela de resultados abaixo do mapa -->
+    <table>
+      <thead>
+        <tr>
+          <th>ID TCV</th>
+          <th>Logradouro</th>
+          <th>Distância (km)</th>
+          <th>Tempo (min)</th>
+          <th>Tempo c/ Tráfego (min)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in results %}
+        <tr>
+          <td>{{ item.id }}</td>
+          <td>{{ item.logradouro }}</td>
+          <td>
+            {{ item.dist_km if item.dist_km is not none else '—' }}
+          </td>
+          <td>
+            {{ item.duration_min if item.duration_min is not none else '—' }}
+          </td>
+          <td>
+            {{ item.duration_traffic_min if item.duration_traffic_min is not none else '—' }}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- --------------------------------------------------- -->
+    <!-- 1) Injeta a configuração do Flask no JS            -->
+    <!--    (só com a chave de browser, que tem restrição)  -->
+    <!-- --------------------------------------------------- -->
+    <script type="application/json">
+      const CONFIGURATION = {{ configuration | tojson }};
+    </script>
+
+    <!-- --------------------------------------------------- -->
+    <!-- 2) Injeta coords_list dentro de um script JSON      -->
+    <!-- --------------------------------------------------- -->
+    <script id="coords-data" type="application/json">
+      {{ coords_list | tojson }}
+    </script>
+
+    <!-- --------------------------------------------------- -->
+    <!-- 3) Bloco JS que faz parsing e cria marcadores       -->
+    <!-- --------------------------------------------------- -->
+    <script>
+      function initMapScript() {
+        // Cria o mapa usando CONFIGURATION.mapOptions
+        const map = new google.maps.Map(document.getElementById("map"), CONFIGURATION.mapOptions);
+
+        // Carrega e faz parse do JSON em coords-data
+        const raw = document.getElementById("coords-data").textContent.trim();
+        let coords = [];
+        try {
+          coords = JSON.parse(raw);
+        } catch (e) {
+          console.error("Falha ao ler coords-data:", e);
+        }
+
+        // Coloca um marker para cada ponto válido
+        coords.forEach(pt => {
+          const { lat, lng, titulo } = pt;
+          if (lat === null || lng === null) return;
+          new google.maps.Marker({
+            position: { lat, lng },
+            map: map,
+            title: titulo
+          });
+        });
+
+        // Ajusta viewport para caber todos os marcadores (opcional)
+        const bounds = new google.maps.LatLngBounds();
+        coords.forEach(pt => {
+          if (pt.lat !== null && pt.lng !== null) {
+            bounds.extend(new google.maps.LatLng(pt.lat, pt.lng));
+          }
+        });
+        if (!bounds.isEmpty()) {
+          map.fitBounds(bounds);
+        } else {
+          // Se não houver pontos, centraliza num centro genérico
+          map.setCenter(CONFIGURATION.mapOptions.center);
+          map.setZoom(CONFIGURATION.mapOptions.zoom);
+        }
+      }
+    </script>
+
+    <!-- --------------------------------------------------- -->
+    <!-- 4) Carrega a Google Maps JS API (chave de browser)  -->
+    <!-- --------------------------------------------------- -->
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?
+           key={{ configuration.mapsApiKey }}
+           &callback=initMapScript
+           &libraries=places,geometry">
+    </script>
+  </body>
+</html>
