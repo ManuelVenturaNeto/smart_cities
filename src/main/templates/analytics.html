@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Cities - Data Analytics</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css">
+    <script src="https://cdn.jsdelivr.net/npm/datatables.net@1.11.5/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/datatables.net@1.11.5/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    
+    <div class="header-bar">
+        <a href="/">Route Planner</a>
+        <a href="/heatmap">Heatmap</a>
+        <a href="/analytics" class="active">Data Analytics</a>
+    </div>
+
+    <div class="container">
+        <h1>Smart Cities Data Analytics</h1>
+        <div class="filters">
+            <h3>Data Filters</h3>
+            <div class="filter-group">
+                <label for="dataset-select">Dataset:</label>
+                <select id="dataset-select">
+                    {% for key, value in datasets.items() %}
+                    <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button id="load-data">Load Data</button>
+        </div>
+
+        <div id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Loading data...</p>
+        </div>
+        <div class="pagination-controls">
+            <button id="prev-page">Previous</button>
+            <span id="page-info">Page 1 of 1</span>
+            <button id="next-page">Next</button>
+            <span id="total-records">Total records: 0</span>
+        </div>
+        <div id="charts-container">
+            <div class="chart-row">
+                <div class="chart-container">
+                    <canvas id="bar-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="pie-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-row">
+                <div class="chart-container">
+                    <canvas id="line-chart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div id="map-container" style="height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="data-table-container">
+            <table id="data-table" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <!-- Columns will be dynamically added -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be dynamically added -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="/static/analytics.js"></script>
+</body>
+</html>

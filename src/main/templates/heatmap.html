@@ -6,9 +6,11 @@
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=visualization"></script>
 </head>
 <body>
-    <div class="header-bar">
-        <a href="{{ url_for('routes.home') }}">View Home</a>
-    </div>
+        <div class="header-bar">
+            <a href="/">Route Planner</a>
+            <a href="/heatmap" class="active">Heatmap</a>
+            <a href="/analytics">Data Analytics</a>
+        </div>
     <div class="container">
         <h1>Traffic Data Heatmap</h1>
         

@@ -246,3 +246,70 @@ h1 {
 #apply-filters:hover {
     background: #2980b9;
 }
+
+.chart-row {
+    display: flex;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.chart-container {
+    flex: 1;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    height: 400px;
+}
+
+#map-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#data-table-container {
+    margin-top: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.header-bar a.active {
+    background: #1a5276;
+}
+
+/* DataTables overrides */
+.dataTables_wrapper {
+    margin-top: 20px;
+}
+
+.dataTables_filter input {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.dataTables_length select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+.dt-buttons {
+    margin-bottom: 15px;
+}
+
+.dt-button {
+    background: #3498db !important;
+    color: white !important;
+    border: none !important;
+    padding: 5px 10px !important;
+    border-radius: 4px !important;
+    margin-right: 5px !important;
+}
+
+.dt-button:hover {
+    background: #2980b9 !important;
+}

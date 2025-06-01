@@ -3,12 +3,14 @@ from flask import Blueprint, render_template, request, jsonify, current_app
 from src.services.google_maps_api import GoogleMapsService
 from src.models.trecho import CompleteRoute, RouteSegment
 from src.services.heatmap_service import HeatmapService
-
+from src.services.data_analytics_service import DataService
 
 routes_bp = Blueprint("routes", __name__)
 logger = logging.getLogger(__name__)
 
 maps_service = GoogleMapsService()
+
+data_service = DataService(data_dir="data")
 
 
 @routes_bp.route("/")
@@ -139,4 +141,40 @@ def get_heatmap_data():
         return jsonify(data)
     except Exception as e:
         logger.error(f"Error getting heatmap data: {str(e)}", exc_info=True)
+        return jsonify({"error": "Internal server error"}), 500
+
+
+@routes_bp.route("/analytics")
+def analytics():
+    """Render the analytics dashboard page with Google Maps API key."""
+    logger.debug("Analytics page accessed")
+    try:
+        datasets = data_service.get_available_datasets()
+        return render_template(
+            "analytics.html",
+            google_maps_key=current_app.config["GOOGLE_MAPS_KEY"],
+            datasets=datasets,
+        )
+    except Exception as e:
+        logger.error(f"Error rendering analytics page: {str(e)}", exc_info=True)
+        raise
+
+
+@routes_bp.route("/get_dataset/<dataset_name>", methods=["GET"])
+def get_dataset(dataset_name: str):
+    """API endpoint to get dataset content with pagination"""
+    page = request.args.get("page", default=1, type=int)
+    per_page = request.args.get("per_page", default=100, type=int)
+
+    logger.info(
+        f"Dataset request received for: {dataset_name} (page: {page}, per_page: {per_page})"
+    )
+
+    try:
+        data = data_service.load_dataset(dataset_name, page, per_page)
+        if data is None:
+            return jsonify({"error": "Dataset not found"}), 404
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Error getting dataset {dataset_name}: {str(e)}", exc_info=True)
         return jsonify({"error": "Internal server error"}), 500
