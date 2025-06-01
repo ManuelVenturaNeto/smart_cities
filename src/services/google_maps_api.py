@@ -1,6 +1,7 @@
 import logging
 import os
 import googlemaps
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -29,9 +30,27 @@ class GoogleMapsService:
             self.log.debug(
                 f"Getting route from {origins} to {destinations} (mode: {mode})"
             )
-            directions = self.client.directions(
-                origins, destinations, mode=mode, alternatives=False
-            )
+
+            now = datetime.now()
+            if mode == "transit":
+                directions = self.client.directions(
+                    origins,
+                    destinations,
+                    mode=mode,
+                    alternatives=False,
+                    departure_time=now,
+                    transit_mode=["bus", "subway", "train"],
+                    transit_routing_preference="less_walking",
+                )
+            else:
+                directions = self.client.directions(
+                    origins,
+                    destinations,
+                    mode=mode,
+                    alternatives=False,
+                    departure_time=now,
+                    traffic_model="optimistic",
+                )
 
             if directions:
                 self.log.debug(f'Route found with {len(directions[0]["legs"])} legs')

@@ -3,11 +3,13 @@ body {
     margin: 0;
     padding: 20px;
     color: #333;
+    background: #faefdf;
 }
 
 .container {
     max-width: 1000px;
     margin: 0 auto;
+    
 }
 
 h1 {
@@ -16,7 +18,7 @@ h1 {
 }
 
 .input-section {
-    background: #f9f9f9;
+    background: #eec07b;
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -76,7 +78,7 @@ h1 {
 }
 
 #results {
-    background: #f9f9f9;
+    background: #eec07b;
     padding: 20px;
     border-radius: 8px;
 }
