@@ -72,19 +72,12 @@
     <!-- 1) Injeta a configuração do Flask no JS            -->
     <!--    (só com a chave de browser, que tem restrição)  -->
     <!-- --------------------------------------------------- -->
-    <script type="application/json">
+    <script  id="coords-data"  type="application/json">
       const CONFIGURATION = {{ configuration | tojson }};
     </script>
 
     <!-- --------------------------------------------------- -->
-    <!-- 2) Injeta coords_list dentro de um script JSON      -->
-    <!-- --------------------------------------------------- -->
-    <script id="coords-data" type="application/json">
-      {{ coords_list | tojson }}
-    </script>
-
-    <!-- --------------------------------------------------- -->
-    <!-- 3) Bloco JS que faz parsing e cria marcadores       -->
+    <!-- 2) Bloco JS que faz parsing e cria marcadores       -->
     <!-- --------------------------------------------------- -->
     <script>
       function initMapScript() {
@@ -129,7 +122,7 @@
     </script>
 
     <!-- --------------------------------------------------- -->
-    <!-- 4) Carrega a Google Maps JS API (chave de browser)  -->
+    <!-- 3) Carrega a Google Maps JS API (chave de browser)  -->
     <!-- --------------------------------------------------- -->
     <script async defer
       src="https://maps.googleapis.com/maps/api/js?
