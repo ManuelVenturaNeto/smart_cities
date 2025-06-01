@@ -47,26 +47,35 @@ def calculate_route():
             logger.warning("Insufficient addresses provided")
             return jsonify({"error": "At least two addresses are required"}), 400
 
+        # Special handling for transit mode
+        if mode == "transit" and len(addresses) > 3:
+            return (
+                jsonify(
+                    {
+                        "error": "Transit mode supports maximum 3 points (origin, destination, and one waypoint)"
+                    }
+                ),
+                400,
+            )
+
+        # Get origin, destination, and waypoints
+        origin = addresses[0]
+        destination = addresses[-1]
+        waypoints = addresses[1:-1] if len(addresses) > 2 else None
+
+        logger.debug(
+            f"Processing route: {origin} to {destination} with waypoints: {waypoints}"
+        )
+
+        route = maps_service.get_route(origin, destination, mode, waypoints)
+        if not route:
+            error_msg = "Could not calculate route"
+            if mode == "transit" and waypoints and len(waypoints) != 1:
+                error_msg = "Transit mode supports exactly one waypoint between origin and destination"
+            return jsonify({"error": error_msg}), 400
+
         segments = []
-        for i in range(len(addresses) - 1):
-            origin = addresses[i]
-            destination = addresses[i + 1]
-
-            logger.debug(f"Processing segment {i + 1}: {origin} to {destination}")
-
-            route = maps_service.get_route(origin, destination, mode)
-            if not route:
-                logger.error(f"Route calculation failed for segment {i + 1}")
-                return (
-                    jsonify(
-                        {
-                            "error": f"Could not calculate route from {origin} to {destination}"
-                        }
-                    ),
-                    400,
-                )
-
-            leg = route["legs"][0]
+        for leg in route["legs"]:
             segments.append(
                 RouteSegment(
                     start_address=leg["start_address"],

@@ -277,7 +277,11 @@ document.addEventListener('DOMContentLoaded', function() {
         msgElement.className = 'error-message';
         msgElement.textContent = message;
         document.querySelector('.container').appendChild(msgElement);
-    }
+        // Remove after 5 seconds
+        setTimeout(() => {
+            errorDiv.remove();
+        }, 5000);
+}
     
     initMap();
 });

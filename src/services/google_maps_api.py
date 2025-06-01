@@ -22,17 +22,22 @@ class GoogleMapsService:
         self.client = googlemaps.Client(key=self.api_key)
         self.log.debug("Google Maps service initialized")
 
-    def get_route(self, origins, destinations, mode):
+    def get_route(self, origins, destinations, mode, waypoints=None):
         """
         Get the route between two locations using Google Maps Directions API.
         """
         try:
             self.log.debug(
-                f"Getting route from {origins} to {destinations} (mode: {mode})"
+                f"Getting route from {origins} to {destinations} with {len(waypoints) if waypoints else 0} waypoints (mode: {mode})"
             )
 
             now = datetime.now()
             if mode == "transit":
+                # Transit mode has limitations - can't use waypoints unless exactly two
+                # if waypoints and len(waypoints) != 2:
+                #     self.log.warning("Transit mode requires exactly two waypoints or none")
+                #     return None
+
                 directions = self.client.directions(
                     origins,
                     destinations,
@@ -50,6 +55,8 @@ class GoogleMapsService:
                     alternatives=False,
                     departure_time=now,
                     traffic_model="optimistic",
+                    waypoints=waypoints if waypoints else None,
+                    optimize_waypoints=True,
                 )
 
             if directions:

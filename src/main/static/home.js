@@ -21,14 +21,18 @@ document.addEventListener('DOMContentLoaded', function() {
     initMap();
     
     // Add new address input
-    addAddressBtn.addEventListener('click', function() {
+    addAddressBtn.addEventListener('click', function () {
         const div = document.createElement('div');
         div.className = 'address-group';
         div.innerHTML = `
-            <input type="text" class="address-input" placeholder="Enter address">
+            <input type="text" class="address-input pac-target-input" placeholder="Enter address" autocomplete="off">
             <button class="remove-address">×</button>
         `;
         addressInputs.appendChild(div);
+
+        // Reaplica autocomplete no novo input
+        const newInput = div.querySelector('.address-input');
+        new google.maps.places.Autocomplete(newInput);
     });
     
     // Remove address input
@@ -68,17 +72,37 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.error) {
-                alert(data.error);
+                showError(data.error);
                 return;
             }
             
             displayRoute(data.route, data.polyline);
-            renderMapRoute(data.polyline);
+            renderMapRoute(data.polyline, mode);
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error calculating route');
+            showError('Error calculating route');
         });
+
+        // Add this helper function
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.textContent = message;
+            
+            // Remove any existing error messages
+            const existingErrors = document.querySelectorAll('.error-message');
+            existingErrors.forEach(err => err.remove());
+            
+            // Insert the error message before the map
+            const map = document.getElementById('map');
+            map.parentNode.insertBefore(errorDiv, map);
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
     });
     
     // Display route summary
