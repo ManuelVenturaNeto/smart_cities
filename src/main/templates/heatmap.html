@@ -6,7 +6,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=visualization"></script>
 </head>
 <body>
-    <div class="nav-link">
+    <div class="header-bar">
         <a href="{{ url_for('routes.home') }}">View Home</a>
     </div>
     <div class="container">
@@ -20,10 +20,7 @@
         <div id="map"></div>
         
         <div class="controls">
-            <button id="toggle-heatmap">Toggle Heatmap</button>
-            <button id="change-gradient">Change Gradient</button>
-            <button id="change-radius">Change Radius</button>
-            <button id="change-opacity">Change Opacity</button>
+            <button id="toggle-heatmap">Heatmap Speed Reducer</button>
         </div>
     </div>
     

@@ -120,20 +120,12 @@ document.addEventListener('DOMContentLoaded', function() {
             radius: currentRadius, // Use the current radius value
             opacity: 0.7,
             gradient: [
-                'rgba(0, 255, 255, 0)',
-                'rgba(0, 255, 255, 1)',
-                'rgba(0, 191, 255, 1)',
-                'rgba(0, 127, 255, 1)',
-                'rgba(0, 63, 255, 1)',
-                'rgba(0, 0, 255, 1)',
-                'rgba(0, 0, 223, 1)',
-                'rgba(0, 0, 191, 1)',
-                'rgba(0, 0, 159, 1)',
-                'rgba(0, 0, 127, 1)',
-                'rgba(63, 0, 91, 1)',
-                'rgba(127, 0, 63, 1)',
-                'rgba(191, 0, 31, 1)',
-                'rgba(255, 0, 0, 1)'
+                    'rgba(0, 255, 0, 0)',
+                    'rgba(100, 100, 255, 1)',
+                    'rgba(0, 255, 255, 1)',
+                    'rgba(255, 255, 0, 1)',
+                    'rgba(255, 128, 0, 1)',
+                    'rgba(255, 0, 0, 1)'
             ]
         });
     }
@@ -150,44 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
     function setupControls() {
         document.getElementById('toggle-heatmap').addEventListener('click', function() {
             heatmap.setMap(heatmap.getMap() ? null : map);
-        });
-        
-        document.getElementById('change-gradient').addEventListener('click', function() {
-            const gradients = [
-                null, // Default gradient
-                [
-                    'rgba(0, 255, 0, 0)',
-                    'rgba(0, 255, 0, 1)',
-                    'rgba(255, 255, 0, 1)',
-                    'rgba(255, 128, 0, 1)',
-                    'rgba(255, 0, 0, 1)'
-                ],
-                [
-                    'rgba(128, 0, 128, 0)',
-                    'rgba(128, 0, 128, 1)',
-                    'rgba(0, 0, 255, 1)',
-                    'rgba(0, 255, 255, 1)',
-                    'rgba(255, 255, 255, 1)'
-                ]
-            ];
-            
-            const currentGradient = heatmap.get('gradient');
-            const nextIndex = (gradients.indexOf(currentGradient) + 1) % gradients.length;
-            heatmap.set('gradient', gradients[nextIndex]);
-        });
-        
-        document.getElementById('change-radius').addEventListener('click', function() {
-            const radii = [null, 10, 20, 30, 50];
-            const currentRadius = heatmap.get('radius') || 25;
-            const nextIndex = (radii.indexOf(currentRadius) + 1) % radii.length;
-            heatmap.set('radius', radii[nextIndex] || 25);
-        });
-        
-        document.getElementById('change-opacity').addEventListener('click', function() {
-            const opacities = [null, 0.2, 0.4, 0.6, 0.8, 1.0];
-            const currentOpacity = heatmap.get('opacity') || 0.7;
-            const nextIndex = (opacities.indexOf(currentOpacity) + 1) % opacities.length;
-            heatmap.set('opacity', opacities[nextIndex] || 0.7);
         });
     }
     
