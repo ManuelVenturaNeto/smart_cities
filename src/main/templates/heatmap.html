@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Cities - Heatmap</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=visualization"></script>
+</head>
+<body>
+    <div class="nav-link">
+        <a href="{{ url_for('routes.home') }}">View Home</a>
+    </div>
+    <div class="container">
+        <h1>Traffic Data Heatmap</h1>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading heatmap data...</p>
+        </div>
+        
+        <div id="map"></div>
+        
+        <div class="controls">
+            <button id="toggle-heatmap">Toggle Heatmap</button>
+            <button id="change-gradient">Change Gradient</button>
+            <button id="change-radius">Change Radius</button>
+            <button id="change-opacity">Change Opacity</button>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='heatmap.js') }}"></script>
+</body>
+</html>

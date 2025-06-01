@@ -6,6 +6,9 @@
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_key }}&libraries=places"></script>
 </head>
 <body>
+    <div class="nav-link">
+        <a href="{{ url_for('routes.heatmap') }}">View Traffic Heatmap</a>
+    </div>
     <div class="container">
         <h1>Route Planner</h1>
         <div class="input-section">
@@ -39,6 +42,6 @@
         </div>
     </div>
     
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="{{ url_for('static', filename='home.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,5 @@
+pipeline_logs.log
+.flake8
+.pre-commit-config.yaml
+.pylintrc
+.vscode

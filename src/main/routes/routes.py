@@ -88,3 +88,32 @@ def calculate_route():
     except Exception as e:
         logger.error(f"Error calculating route: {str(e)}", exc_info=True)
         return jsonify({"error": "Internal server error"}), 500
+
+@routes_bp.route("/heatmap")
+def heatmap():
+    """
+    Render the heatmap page with Google Maps API key.
+    """
+    logger.debug("Heatmap page accessed")
+    try:
+        return render_template(
+            "heatmap.html", google_maps_key=current_app.config["GOOGLE_MAPS_KEY"]
+        )
+    except Exception as e:
+        logger.error(f"Error rendering heatmap page: {str(e)}", exc_info=True)
+        raise
+
+@routes_bp.route("/get_heatmap_data", methods=["GET"])
+def get_heatmap_data():
+    """
+    Get heatmap data from JSON files.
+    """
+    logger.info("Heatmap data request received")
+    try:
+        from src.services.heatmap_service import HeatmapService
+        heatmap_service = HeatmapService()
+        data = heatmap_service.load_data()
+        return jsonify(data)
+    except Exception as e:
+        logger.error(f"Error getting heatmap data: {str(e)}", exc_info=True)
+        return jsonify({"error": "Internal server error"}), 500
