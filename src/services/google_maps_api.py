@@ -21,7 +21,7 @@ class GoogleMapsService:
         self.client = googlemaps.Client(key=self.api_key)
         self.log.debug("Google Maps service initialized")
 
-    def get_route(self, origins, destinations, mode="driving"):
+    def get_route(self, origins, destinations, mode):
         """
         Get the route between two locations using Google Maps Directions API.
         """
@@ -44,7 +44,7 @@ class GoogleMapsService:
             self.log.error(f"Error getting directions: {str(e)}", exc_info=True)
             return None
 
-    def get_distance_matrix(self, origins, destinations, mode="driving"):
+    def get_distance_matrix(self, origins, destinations, mode):
         """
         Get the distance matrix for multiple origins and destinations using Google Maps Distance Matrix API.
         """

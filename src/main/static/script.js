@@ -107,19 +107,36 @@ document.addEventListener('DOMContentLoaded', function() {
         routeSummary.innerHTML = html;
     }
     
-    // Render route on map
-    function renderMapRoute(polyline) {
+    let currentRoutePath = null; // Store the current route path globally
+
+    function renderMapRoute(polyline, mode) {
+        // Remove previous route if it exists
+        if (currentRoutePath) {
+            currentRoutePath.setMap(null);
+            currentRoutePath = null;
+        }
+
         const decodedPath = google.maps.geometry.encoding.decodePath(polyline);
         
-        const routePath = new google.maps.Polyline({
+        // Set different colors based on travel mode
+        const colors = {
+            'driving': '#FF0000',     // Red
+            'walking': '#00FF00',     // Green
+            'transit': '#0000FF',     // Blue
+            'bicycling': '#FFA500',   // Orange
+            'motorcycle': '#800080'   // Purple
+        };
+
+        currentRoutePath = new google.maps.Polyline({
             path: decodedPath,
             geodesic: true,
-            strokeColor: '#FF0000',
+            strokeColor: colors[mode] || '#FF0000', // Default to red if mode not found
             strokeOpacity: 1.0,
-            strokeWeight: 4
+            strokeWeight: 6,
+            zIndex: 10
         });
-        
-        routePath.setMap(map);
+
+        currentRoutePath.setMap(map);
         
         // Fit map to route bounds
         const bounds = new google.maps.LatLngBounds();

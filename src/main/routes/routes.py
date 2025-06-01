@@ -37,7 +37,7 @@ def calculate_route():
             return jsonify({"error": "No data provided"}), 400
 
         addresses = data.get("addresses", [])
-        mode = data.get("mode", "driving")
+        mode = data.get("mode")
 
         logger.debug(f"Calculating route for {len(addresses)} addresses (mode: {mode})")
 
