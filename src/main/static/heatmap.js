@@ -65,9 +65,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function loadHeatmapData() {
         const loadingElement = document.getElementById('loading');
-        loadingElement.style.display = 'flex'; // Ensure loading is visible
+        loadingElement.style.display = 'flex';
         
-        fetch('/get_heatmap_data')
+        fetch('/get_heatmap_data?type=speed-reducer')
             .then(handleResponse)
             .then(handleData)
             .catch(handleError);
@@ -138,10 +138,50 @@ document.addEventListener('DOMContentLoaded', function() {
         // Add some padding if needed
         map.panToBounds(bounds);
     }
-    
+
+    function updateHeatmap(points) {
+        // Filter out invalid points
+        const validPoints = points
+            .filter(point => isValidLatLng(point.lat, point.lng))
+            .map(point => new google.maps.LatLng(point.lat, point.lng));
+        
+        if (validPoints.length === 0) {
+            showMessage('No valid coordinates found in the data.');
+            return;
+        }
+        
+        if (heatmap) {
+            heatmap.setData(validPoints);
+        } else {
+            heatmapData = validPoints;
+            initHeatmap();
+        }
+        
+        fitMapToBounds();
+    }
     function setupControls() {
-        document.getElementById('toggle-heatmap').addEventListener('click', function() {
-            heatmap.setMap(heatmap.getMap() ? null : map);
+        document.querySelectorAll('.controls button').forEach(button => {
+            button.addEventListener('click', async function() {
+                const loadingElement = document.getElementById('loading');
+                loadingElement.style.display = 'flex';
+                
+                try {
+                    const heatmapType = this.id.replace('heatmap-', '');
+                    const response = await fetch(`/get_heatmap_data?type=${heatmapType}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    updateHeatmap(data.points);
+                } catch (error) {
+                    console.error('Error loading heatmap data:', error);
+                    showMessage(`Error loading heatmap data: ${error.message}`);
+                } finally {
+                    loadingElement.style.display = 'none';
+                }
+            });
         });
     }
     

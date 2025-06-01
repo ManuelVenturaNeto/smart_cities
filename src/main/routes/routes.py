@@ -108,14 +108,18 @@ def heatmap():
 @routes_bp.route("/get_heatmap_data", methods=["GET"])
 def get_heatmap_data():
     """
-    Get heatmap data from JSON files.
+    Get heatmap data for specific type from JSON files.
     """
-    logger.info("Heatmap data request received")
+    heatmap_type = request.args.get('type')
+    if not heatmap_type:
+        return jsonify({"error": "Heatmap type parameter is required"}), 400
+    
+    logger.info(f"Heatmap data request received for type: {heatmap_type}")
     try:
         from src.services.heatmap_service import HeatmapService
 
         heatmap_service = HeatmapService()
-        data = heatmap_service.load_data()
+        data = heatmap_service.load_data(heatmap_type)
         return jsonify(data)
     except Exception as e:
         logger.error(f"Error getting heatmap data: {str(e)}", exc_info=True)
