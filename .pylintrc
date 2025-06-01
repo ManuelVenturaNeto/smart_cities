@@ -9,6 +9,9 @@ disable =
       W1203, #Use % formatting in logging functions and pass the % parameters as arguments
       R1702, #Too many nested blocks
       W0212, #Accessing a protected member _foo of a client class
+      E0401, #ImportError
+      C0415, #Import outside toplevel
+      R0903, #Too few public methods
 
 # Analyse import fallback blocks. This can be used to support both Python 2 and
 # 3 compatible code, which means that the block might have code that exists
