@@ -89,6 +89,7 @@ def calculate_route():
         logger.error(f"Error calculating route: {str(e)}", exc_info=True)
         return jsonify({"error": "Internal server error"}), 500
 
+
 @routes_bp.route("/heatmap")
 def heatmap():
     """
@@ -103,6 +104,7 @@ def heatmap():
         logger.error(f"Error rendering heatmap page: {str(e)}", exc_info=True)
         raise
 
+
 @routes_bp.route("/get_heatmap_data", methods=["GET"])
 def get_heatmap_data():
     """
@@ -111,6 +113,7 @@ def get_heatmap_data():
     logger.info("Heatmap data request received")
     try:
         from src.services.heatmap_service import HeatmapService
+
         heatmap_service = HeatmapService()
         data = heatmap_service.load_data()
         return jsonify(data)
