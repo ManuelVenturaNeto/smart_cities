@@ -2,6 +2,8 @@ import logging
 from flask import Blueprint, render_template, request, jsonify, current_app
 from src.services.google_maps_api import GoogleMapsService
 from src.models.trecho import CompleteRoute, RouteSegment
+from src.services.heatmap_service import HeatmapService
+
 
 routes_bp = Blueprint("routes", __name__)
 logger = logging.getLogger(__name__)
@@ -108,18 +110,23 @@ def heatmap():
 @routes_bp.route("/get_heatmap_data", methods=["GET"])
 def get_heatmap_data():
     """
-    Get heatmap data for specific type from JSON files.
+    Get heatmap data for specific type from JSON files with optional filters.
     """
-    heatmap_type = request.args.get('type')
+
+    heatmap_type = request.args.get("type")
+    year_filter = request.args.get("year")
+    fatality_filter = request.args.get("fatality")
+
     if not heatmap_type:
         return jsonify({"error": "Heatmap type parameter is required"}), 400
-    
-    logger.info(f"Heatmap data request received for type: {heatmap_type}")
+
+    logger.info(
+        f"Heatmap data request received for type: {heatmap_type} with filters year={year_filter}, fatality={fatality_filter}"
+    )
     try:
-        from src.services.heatmap_service import HeatmapService
 
         heatmap_service = HeatmapService()
-        data = heatmap_service.load_data(heatmap_type)
+        data = heatmap_service.load_data(heatmap_type, year_filter, fatality_filter)
         return jsonify(data)
     except Exception as e:
         logger.error(f"Error getting heatmap data: {str(e)}", exc_info=True)

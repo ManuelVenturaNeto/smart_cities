@@ -17,13 +17,15 @@ class HeatmapService:
         self.log = logging.getLogger(__name__)
         # Get the project root directory
         self.data_dir = Path(__file__).parent.parent.parent / "data"
-        self.log.debug(f"HeatmapService initialized with data directory: {self.data_dir}")
-        
+        self.log.debug(
+            f"HeatmapService initialized with data directory: {self.data_dir}"
+        )
+
         # Verify data directory exists
         if not self.data_dir.exists():
             self.log.error(f"Data directory not found at: {self.data_dir}")
             raise FileNotFoundError(f"Data directory not found at: {self.data_dir}")
-        
+
         # List available files for debugging
         available_files = list(self.data_dir.glob("*.json"))
         self.log.info(f"Available JSON files: {[f.name for f in available_files]}")
@@ -62,12 +64,14 @@ class HeatmapService:
             self.log.error(f"Error parsing LINESTRING: {str(e)}")
             return []
 
-    def load_data(self, heatmap_type: str):
+    def load_data(self, heatmap_type: str, year_filter=None, fatality_filter=None):
         """
         Load JSON data for specific heatmap type.
         """
-        self.log.info(f"Loading heatmap data for {heatmap_type}")
-        
+        self.log.info(
+            f"Loading heatmap data for {heatmap_type} with filters - year: {year_filter}, fatality: {fatality_filter}"
+        )
+
         try:
             # Map button IDs to filenames
             file_mapping = {
@@ -75,18 +79,18 @@ class HeatmapService:
                 "traffic-light-signaling": "sinalizacao_semaforica.json",
                 "electronic-physicalization": "fiscalizacao_eletronica.json",
                 "public-parking-elderly-person": "estacionamento_publico_pessoa_idosa.json",
-                "short-term-parking": "estacionamento_rotativo.json", 
+                "short-term-parking": "estacionamento_rotativo.json",
                 "rotary-sales-point": "posto_venda_rotativo.json",
-                "traffic-accident-with-victims": "sinistro_transito_vitima.json"
+                "traffic-accident-with-victims": "sinistro_transito_vitima.json",
             }
-                    
+
             filename = file_mapping.get(heatmap_type)
             if not filename:
                 self.log.warning(f"No mapping found for heatmap type: {heatmap_type}")
                 return {"points": []}
-                
+
             file_path = self.data_dir / filename
-            
+
             if not file_path.exists():
                 available_files = "\n".join([f.name for f in self.data_dir.glob("*")])
                 self.log.error(
@@ -97,21 +101,84 @@ class HeatmapService:
 
             with open(file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
-                
+
             points = []
+            details = []  # Store additional details for each point
+
             if "fields" in data and "records" in data:
                 field_names = [field["id"] for field in data["fields"]]
                 for record in data["records"]:
                     row = dict(zip(field_names, record))
+
+                    record_year = None
+                    try:
+                        boletim = row.get("NUMERO_BOLETIM", "")
+                        if isinstance(boletim, str) and "-" in boletim:
+                            record_year = boletim.split("-")[0]
+                    except Exception as e:
+                        self.log.warning(
+                            f"Failed to extract year from NUMERO_BOLETIM: {boletim}"
+                        )
+
+                    if year_filter and record_year != str(year_filter):
+                        continue
+
+                    if (
+                        fatality_filter
+                        and row.get("INDICADOR_FATALIDADE", "").lower()
+                        != fatality_filter.lower()
+                    ):
+                        continue
+
                     if "GEOMETRIA" in row:
-                        points.extend(self.process_geometry(row["GEOMETRIA"]))
+                        point_data = self.process_geometry(row["GEOMETRIA"])
+                        if point_data:
+                            points.extend(point_data)
+                            details.append(
+                                {
+                                    "boletim": boletim,
+                                    "fatalidade": row.get("INDICADOR_FATALIDADE", ""),
+                                    "year": record_year,
+                                }
+                            )
             elif isinstance(data, list):
                 for item in data:
+                    # Similar filtering logic as above
+                    if heatmap_type == "traffic-accident-with-victims":
+                        try:
+                            record_year = item.get("NUMERO_BOLETIM", "").split("-")[0]
+                        except:
+                            record_year = None
+
+                        if year_filter and record_year != str(year_filter):
+                            continue
+
+                        if (
+                            fatality_filter
+                            and item.get("INDICADOR_FATALIDADE", "").lower()
+                            != fatality_filter.lower()
+                        ):
+                            continue
+
                     if "GEOMETRIA" in item:
-                        points.extend(self.process_geometry(item["GEOMETRIA"]))
-            
+                        point_data = self.process_geometry(row["GEOMETRIA"])
+                        if point_data:
+                            points.extend(point_data)
+                            details.append(
+                                {
+                                    "boletim": item.get("NUMERO_BOLETIM", ""),
+                                    "fatalidade": item.get("INDICADOR_FATALIDADE", ""),
+                                    "year": row.get("NUMERO_BOLETIM", "").split("-")[0],
+                                }
+                            )
+
             self.log.info(f"Processed {len(points)} points from {filename}")
-            return {"points": points}
+            return {
+                "points": points,
+                "details": (
+                    details if heatmap_type == "traffic-accident-with-victims" else []
+                ),
+            }
 
         except json.JSONDecodeError as e:
             self.log.error(f"Invalid JSON in {filename}: {str(e)}")
@@ -153,5 +220,5 @@ class HeatmapService:
                         points.append(converted)
         except Exception as e:
             self.log.error(f"Error processing geometry: {str(e)}")
-        
+
         return points

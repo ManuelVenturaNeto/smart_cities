@@ -29,6 +29,25 @@
             <button id="heatmap-traffic-accident-with-victims">Traffic Cccident With Victims</button>
             <button id="toggle-markers">Toggle Accident Markers</button>
         </div>
+        <div class="filters" id="accident-filters" style="display: none;">
+            <h3>Accident Filters</h3>
+            <div class="filter-group">
+                <label for="year-filter">Year:</label>
+                <select id="year-filter">
+                    <option value="">All Years</option>
+                    <!-- Will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="fatality-filter">Fatality:</label>
+                <select id="fatality-filter">
+                    <option value="">All</option>
+                    <option value="Sim">With fatalities</option>
+                    <option value="Não">Without fatalities</option>
+                </select>
+            </div>
+            <button id="apply-filters">Apply Filters</button>
+        </div>
     </div>
     
     <script src="{{ url_for('static', filename='heatmap.js') }}"></script>

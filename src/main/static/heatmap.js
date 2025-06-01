@@ -17,6 +17,93 @@ document.addEventListener('DOMContentLoaded', function() {
         setupScrollControl();
         // Load data from server
         loadHeatmapData();
+        // add accident filters
+        setupAccidentFilters();
+    }
+
+    function setupAccidentFilters() {
+        // Only show filters for accident data
+        const accidentButton = document.getElementById('heatmap-traffic-accident-with-victims');
+        const filtersDiv = document.getElementById('accident-filters');
+        
+        accidentButton.addEventListener('click', function() {
+            filtersDiv.style.display = 'block';
+            loadAvailableYears();
+        });
+        
+        // Hide filters when other buttons are clicked
+        document.querySelectorAll('.controls button').forEach(button => {
+            if (button.id !== 'heatmap-traffic-accident-with-victims' && button.id !== 'toggle-markers') {
+                button.addEventListener('click', function() {
+                    filtersDiv.style.display = 'none';
+                });
+            }
+        });
+        
+        // Apply filters when button is clicked
+        document.getElementById('apply-filters').addEventListener('click', function() {
+            const yearFilter = document.getElementById('year-filter').value;
+            const fatalityFilter = document.getElementById('fatality-filter').value;
+            loadFilteredAccidentData(yearFilter, fatalityFilter);
+        });
+    }
+
+    function loadAvailableYears() {
+        // First load all data to get available years
+        const loadingElement = document.getElementById('loading');
+        loadingElement.style.display = 'flex';
+        
+        fetch('/get_heatmap_data?type=traffic-accident-with-victims')
+            .then(response => response.json())
+            .then(data => {
+                loadingElement.style.display = 'none';
+                
+                if (data.details && data.details.length > 0) {
+                    // Extract unique years
+                    const years = [...new Set(data.details.map(item => item.year))].filter(Boolean).sort();
+                    const yearSelect = document.getElementById('year-filter');
+                    
+                    // Clear existing options except the first one
+                    while (yearSelect.options.length > 1) {
+                        yearSelect.remove(1);
+                    }
+                    
+                    // Add new year options
+                    years.forEach(year => {
+                        const option = document.createElement('option');
+                        option.value = year;
+                        option.textContent = year;
+                        yearSelect.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error loading year data:', error);
+                loadingElement.style.display = 'none';
+            });
+    }
+
+    function loadFilteredAccidentData(year, fatality) {
+        const loadingElement = document.getElementById('loading');
+        loadingElement.style.display = 'flex';
+        
+        let url = `/get_heatmap_data?type=traffic-accident-with-victims`;
+        if (year) url += `&year=${year}`;
+        if (fatality) url += `&fatality=${fatality}`;
+        
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                loadingElement.style.display = 'none';
+                updateHeatmap(data.points);
+                
+                // You could also display the details data if needed
+                console.log('Filtered accident details:', data.details);
+            })
+            .catch(error => {
+                console.error('Error loading filtered data:', error);
+                loadingElement.style.display = 'none';
+            });
     }
 
     function setupScrollControl() {

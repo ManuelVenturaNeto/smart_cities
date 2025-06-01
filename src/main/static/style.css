@@ -204,3 +204,45 @@ h1 {
 .header-bar a:hover {
     background: #2980b9;
 }
+
+.filters {
+    background: #eec07b;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.filters h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+.filter-group {
+    margin-bottom: 10px;
+}
+
+.filter-group label {
+    display: inline-block;
+    width: 100px;
+    font-weight: bold;
+}
+
+.filter-group select {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+#apply-filters {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#apply-filters:hover {
+    background: #2980b9;
+}
